@@ -1,12 +1,16 @@
 {
   "name": "insomnia-plugin-plus4u-oidc",
-  "version": "0.1.0",
+  "version": "0.1.2",
   "description": "Insomnia plugin that provides easy authentication against oidc.plus4u.net .",
   "main": "plugin.js",
   "license": "MIT",
   "insomnia": {
     "name": "oidc-plus4u-net",
     "description": "Automatic authentication against oidc.plus4u.net"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/UnicornUniverse/insomnia-plugin-plus4u-oidc"
   },
   "dependencies": {
     "got": "^8.0.1",
@@ -15,7 +19,8 @@
     "node-cache": "^4.2.0",
     "npm": "^6.4.1",
     "opn": "^5.3.0",
-    "url": "^0.11.0"
+    "url": "^0.11.0",
+    "oidc-plus4u-vault": "^0.2.2"
   },
   "keywords": [
     "insomnia",
