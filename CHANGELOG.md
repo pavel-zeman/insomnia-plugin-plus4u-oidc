@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 
+## [0.2.0] - 2020-04-09
+
+### Changed
+- Changed default OIDC provider. Current is OIDCg02.
+- Updated versions of underlayer libraries
+
+
 ## [0.1.3] - 2019-01-25
 
 ### Changed

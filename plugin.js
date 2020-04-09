@@ -1,4 +1,4 @@
-const OidcToken = require("./oidc-interactive-login");
+const OidcToken = require("./oidc-client");
 const NodeCache = require("node-cache");
 const Jwt = require("jws");
 const secureStore = require("oidc-plus4u-vault/lib/securestore");
@@ -49,12 +49,18 @@ module.exports.templateTags = [
         return "";
       }
       isAlreadyRunning = true;
+      console.log("TEST");
+      try {
+        const token = await OidcToken.interactiveLogin();
+        cacheToken(token, MY_TOKEN);
+      }catch (e) {
+        console.error(e);
+      }finally {
+        isAlreadyRunning = false;
+      }
 
-      const token = await OidcToken.login();
 
-      cacheToken(token, MY_TOKEN);
 
-      isAlreadyRunning = false;
       return token;
     }
   },
