@@ -2,7 +2,7 @@ const OidcToken = require("./oidc-client");
 const NodeCache = require("node-cache");
 const Jwt = require("jws");
 const secureStore = require("oidc-plus4u-vault/lib/securestore");
-const Got = require("got");
+const fetch = require("node-fetch");
 
 let isAlreadyRunning = false;
 
@@ -49,7 +49,6 @@ module.exports.templateTags = [
         return "";
       }
       isAlreadyRunning = true;
-      console.log("TEST");
       try {
         const token = await OidcToken.interactiveLogin();
         cacheToken(token, MY_TOKEN);
@@ -102,12 +101,12 @@ module.exports.templateTags = [
       headers["Content-Type"] = "application/json";
       headers["Accept"] = "application/json";
 
-      let result = await Got.post(tokenEndpoint, {
+      const res = await fetch(grantTokenUri, {
+        method: "POST",
         headers: headers,
-        body: JSON.stringify(credentials)
-      });
-
-      let resp = JSON.parse(result.body);
+        body: JSON.stringify(credentials),
+      })
+      let resp = res.json();
       if (Object.keys(resp.uuAppErrorMap).length > 0) {
         throw `Cannot login to OIDC server on ${oidcServer}. Probably invalid combination of Access Code 1 and Access Code 2.`;
       }
@@ -116,8 +115,8 @@ module.exports.templateTags = [
 
     async getTokenEndpoint(oidcServer) {
       let oidcServerConfigUrl = oidcServer + "/.well-known/openid-configuration";
-      let result = await Got(oidcServerConfigUrl);
-      let oidcConfig = JSON.parse(result.body);
+      const response = await fetch(oidcServerConfigUrl);
+      const oidcConfig = await response.json();
       if (Object.keys(oidcConfig.uuAppErrorMap).length > 0) {
         throw `Cannot get configuration of OIDC server on ${oidcServer}. Probably invalid URL.`;
       }
@@ -161,7 +160,7 @@ module.exports.templateTags = [
       }
 
       let token = await this.login(ac1, ac2, oidcServer);
-      console.log(`Obtained new token for for user ${identification} : ${token}`);
+      console.log(`Obtained new token for for user ${identification}`);
       this.accessCodesStore.set(identification, {accessCode1: ac1, accessCode2: ac2});
 
       return token;

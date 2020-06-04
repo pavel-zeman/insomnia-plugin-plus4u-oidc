@@ -3,7 +3,7 @@
 const http = require("http");
 const url = require("url");
 const open = require("open");
-const Got = require("got");
+const fetch = require("node-fetch");
 
 const OAUTH_CODE = "code";
 const DEFAULT_OIDC_TENANT = "bb977a99f4cc4c37a2afce3fd599d0a7";
@@ -80,9 +80,9 @@ class OidcClient {
     }
 
     let discoveryUri = `${providerUri}/${OIDC_WELL_KNOWN_DISCOVERY_PATH}`;
-    let result = await Got(discoveryUri);
-    let metadata = JSON.parse(result.body);
-    return metadata;
+    const response = await fetch(discoveryUri);
+    const result = await response.json();
+    return result;
   }
 
   static async getPublicKeyData(kid, issuerUri = null) {
@@ -90,7 +90,8 @@ class OidcClient {
     if (!issuerUri) {
       issuerUri = metadata["issuer"];
     }
-    let result = await Got(metadata["jwks_uri"]);
+    const response = await fetch(metadata["jwks_uri"]);
+    const result = await response.json();
     let jwks = JSON.parse(result.body);
     let publicKeyData = jwks.keys.find(pk => pk.kid === kid);
 
@@ -121,14 +122,16 @@ class OidcClient {
 
     let result;
     try {
-      result = await Got.post(grantTokenUri, {
+      const res = await fetch(grantTokenUri, {
+        method: "POST",
         headers: headers,
-        body: JSON.stringify(params)
-      });
+        body: JSON.stringify(params),
+      })
+      result = res.json();
     } catch (e) {
       throw new Error(`Authentication failed: ${e.response.body}`);
     }
-    return JSON.parse(result.body);
+    return result;
   }
 
   static getOidcUri() {

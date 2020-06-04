@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 
+## [0.2.2] - 2020-06-04
+
+### Changed
+- Replaced library Got with node-fetch. Got had problems on some systems
+
 ## [0.2.1] - 2020-04-10
 
 ### Changed
