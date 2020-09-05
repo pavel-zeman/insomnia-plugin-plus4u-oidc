@@ -79,7 +79,7 @@ module.exports.templateTags = [
       {
         displayName: "OIDC Server",
         type: "string",
-        defaultValue: "https://oidc.plus4u.net/uu-oidcg01-main/0-0",
+        defaultValue: "https://uuidentity.plus4u.net/uu-oidc-maing02/bb977a99f4cc4c37a2afce3fd599d0a7/oidc",
         help: `URL of the OIDC server.`
       }
     ],
@@ -94,19 +94,20 @@ module.exports.templateTags = [
       let credentials = {
         accessCode1,
         accessCode2,
-        grant_type: "password"
+        grant_type: "password",
+        scope: "openid https:// http://localhost"
       };
 
       let headers = {};
       headers["Content-Type"] = "application/json";
       headers["Accept"] = "application/json";
 
-      const res = await fetch(grantTokenUri, {
+      const res = await fetch(tokenEndpoint, {
         method: "POST",
         headers: headers,
         body: JSON.stringify(credentials),
       })
-      let resp = res.json();
+      let resp = await res.json();
       if (Object.keys(resp.uuAppErrorMap).length > 0) {
         throw `Cannot login to OIDC server on ${oidcServer}. Probably invalid combination of Access Code 1 and Access Code 2.`;
       }
@@ -156,11 +157,11 @@ module.exports.templateTags = [
           ac1 = await context.app.prompt('Access code 1', {label: "Access Code 1 for user " + identification, inputType: "password"});
           ac2 = await context.app.prompt('Access code 2', {label: "Access Code 2 for user " + identification, inputType: "password"});
         }
-        console.log(`Using ${ac1} and ${ac2} for user ${identification}.`);
+        //console.log(`Using ${ac1} and ${ac2} for user ${identification}.`);
       }
 
       let token = await this.login(ac1, ac2, oidcServer);
-      console.log(`Obtained new token for for user ${identification}`);
+      //console.log(`Obtained new token for for user ${identification}`);
       this.accessCodesStore.set(identification, {accessCode1: ac1, accessCode2: ac2});
 
       return token;
