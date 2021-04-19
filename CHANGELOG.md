@@ -7,6 +7,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 
+## [0.2.4] - 2021-04-19
+
+### Changed
+- Fixed loading of token for *uuPersonPlus4uOidcToken* - sometimes token was not loaded in time
+
 ## [0.2.3] - 2020-09-05
 
 ### Changed
