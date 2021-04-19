@@ -52,15 +52,12 @@ module.exports.templateTags = [
       try {
         const token = await OidcToken.interactiveLogin();
         cacheToken(token, MY_TOKEN);
+        return token;
       }catch (e) {
         console.error(e);
       }finally {
         isAlreadyRunning = false;
       }
-
-
-
-      return token;
     }
   },
   {
