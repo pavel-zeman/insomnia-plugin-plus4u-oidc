@@ -62,3 +62,6 @@ typings/
 
 # IDE data
 .idea
+
+# npm config
+.npmrc
