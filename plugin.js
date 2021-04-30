@@ -81,7 +81,7 @@ module.exports.templateTags = [
       }
     ],
 
-    async login(accessCode1, accessCode2, oidcServer) {
+    async login(accessCode1, accessCode2, oidcServer, scope) {
       if (accessCode1.length === 0 || accessCode2.length === 0) {
         throw `Access code cannot be empty. Ignore this error for "Prompt ad-hoc".`;
       }
@@ -92,7 +92,7 @@ module.exports.templateTags = [
         accessCode1,
         accessCode2,
         grant_type: "password",
-        scope: "openid https:// http://localhost"
+        scope: scope ? scope : "openid https:// http://localhost"
       };
 
       let headers = {};
@@ -121,7 +121,7 @@ module.exports.templateTags = [
       return oidcConfig.token_endpoint;
     },
 
-    async loginDirectly(context, identification, oidcServer) {
+    async loginDirectly(context, identification, oidcServer, oidcScope) {
       let ac1;
       let ac2;
       if (this.accessCodesStore.get(identification)) {
@@ -154,11 +154,9 @@ module.exports.templateTags = [
           ac1 = await context.app.prompt('Access code 1', {label: "Access Code 1 for user " + identification, inputType: "password"});
           ac2 = await context.app.prompt('Access code 2', {label: "Access Code 2 for user " + identification, inputType: "password"});
         }
-        //console.log(`Using ${ac1} and ${ac2} for user ${identification}.`);
       }
 
-      let token = await this.login(ac1, ac2, oidcServer);
-      //console.log(`Obtained new token for for user ${identification}`);
+      let token = await this.login(ac1, ac2, oidcServer, oidcScope);
       this.accessCodesStore.set(identification, {accessCode1: ac1, accessCode2: ac2});
 
       return token;
@@ -169,8 +167,10 @@ module.exports.templateTags = [
       if (cachedToken) {
         return cachedToken.token;
       }
-
-      let token = await this.loginDirectly(context, identification, oidcServer);
+      if (!oidcServer) {
+        oidcServer = context.context.oidcServer;
+      }
+      let token = await this.loginDirectly(context, identification, oidcServer, context.context.oidcScope);
 
       cacheToken(token, identification);
 
