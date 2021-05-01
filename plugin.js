@@ -92,7 +92,7 @@ module.exports.templateTags = [
         accessCode1,
         accessCode2,
         grant_type: "password",
-        scope: scope ? scope : "openid https:// http://localhost"
+        scope
       };
 
       let headers = {};
@@ -121,12 +121,12 @@ module.exports.templateTags = [
       return oidcConfig.token_endpoint;
     },
 
-    async loginDirectly(context, identification, oidcServer, oidcScope) {
+    async loginDirectly(context, identification, oidcServer, oidcScope, cacheKey) {
       let ac1;
       let ac2;
-      if (this.accessCodesStore.get(identification)) {
-        ac1 = this.accessCodesStore.get(identification).accessCode1;
-        ac2 = this.accessCodesStore.get(identification).accessCode2;
+      if (this.accessCodesStore.get(cacheKey)) {
+        ac1 = this.accessCodesStore.get(cacheKey).accessCode1;
+        ac2 = this.accessCodesStore.get(cacheKey).accessCode2;
       } else {
         if (secureStore.exists()) {
           if (!this.vaultPassword) {
@@ -157,23 +157,23 @@ module.exports.templateTags = [
       }
 
       let token = await this.login(ac1, ac2, oidcServer, oidcScope);
-      this.accessCodesStore.set(identification, {accessCode1: ac1, accessCode2: ac2});
+      this.accessCodesStore.set(cacheKey, {accessCode1: ac1, accessCode2: ac2});
 
       return token;
     },
 
     async run(context, identification, oidcServer) {
-      const cachedToken = oidcTokenCache.get(identification);
-      if (cachedToken) {
-        return cachedToken.token;
-      }
       if (!oidcServer) {
         oidcServer = context.context.oidcServer;
       }
-      let token = await this.loginDirectly(context, identification, oidcServer, context.context.oidcScope);
-
-      cacheToken(token, identification);
-
+      const oidcScope = context.context.oidcScope ? context.context.oidcScope : "openid https:// http://localhost";
+      // Cache key must include multiple attributes to correctly handle switching of environments and workspaces 
+      const cacheKey = identification + "#" + oidcServer + "#" + oidcScope + "#" + context.meta.workspaceId; 
+      let token = oidcTokenCache.get(cacheKey)?.token;
+      if (!token) {
+        token = await this.loginDirectly(context, identification, oidcServer, oidcScope, cacheKey);
+        cacheToken(token, cacheKey);
+      }
       return token;
     }
   }
