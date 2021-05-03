@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 
+## [0.2.5] - 2021-05-03
+
+### Changed
+- Fixed cache key (added scope, oidc server and workspace id)
+- Added possibility to define custom scope
+
+
 ## [0.2.4] - 2021-04-19
 
 ### Changed
