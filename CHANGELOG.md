@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Changed
 
+## [0.2.6] - 2021-05-03
+
+### Changed
+- Added definition of scope in GUI
+
+
 ## [0.2.5] - 2021-05-03
 
 ### Changed
