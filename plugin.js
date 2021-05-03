@@ -78,6 +78,12 @@ module.exports.templateTags = [
         type: "string",
         defaultValue: "https://uuidentity.plus4u.net/uu-oidc-maing02/bb977a99f4cc4c37a2afce3fd599d0a7/oidc",
         help: `URL of the OIDC server.`
+      },
+      {
+        displayName: "Token scope",
+        type: "string",
+        defaultValue: "openid https:// http://localhost",
+        help: `URL of the OIDC server.`
       }
     ],
 
@@ -162,11 +168,8 @@ module.exports.templateTags = [
       return token;
     },
 
-    async run(context, identification, oidcServer) {
-      if (!oidcServer) {
-        oidcServer = context.context.oidcServer;
-      }
-      const oidcScope = context.context.oidcScope ? context.context.oidcScope : "openid https:// http://localhost";
+    async run(context, identification, oidcServer, tokenScope) {
+      const oidcScope = tokenScope ? tokenScope : "openid https:// http://localhost";
       // Cache key must include multiple attributes to correctly handle switching of environments and workspaces 
       const cacheKey = identification + "#" + oidcServer + "#" + oidcScope + "#" + context.meta.workspaceId; 
       let token = oidcTokenCache.get(cacheKey)?.token;
