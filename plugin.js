@@ -128,9 +128,11 @@ module.exports.templateTags = [
     },
 
     async loginDirectly(context, identification, oidcServer, oidcScope, cacheKey) {
-      let ac1;
-      let ac2;
-      if (this.accessCodesStore.get(cacheKey)) {
+      let ac1 = context.context[identification + "1"];
+      let ac2 = context.context[identification + "2"];
+      if (ac1 && ac2) {
+        // We already have it all, do nothing
+      } else if (this.accessCodesStore.get(cacheKey)) {
         ac1 = this.accessCodesStore.get(cacheKey).accessCode1;
         ac2 = this.accessCodesStore.get(cacheKey).accessCode2;
       } else {
